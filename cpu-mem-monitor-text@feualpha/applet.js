@@ -50,15 +50,9 @@ MyApplet.prototype = {
 
 	_update: function() {
 		try {
-			GTop.glibtop_get_mem(this.mem_gtop);
-			this.mem_usage = this.mem_gtop.used;
-			this.mem_buffer = this.mem_gtop.buffer;
-			this.mem_cached = this.mem_gtop.cached;
-			this.mem_max = this.mem_gtop.total;
-		
-			let realuse = this.mem_usage - this.mem_buffer - this.mem_cached;
-			let percent = Math.round((realuse * 100) / this.mem_max);
-			this.set_applet_label(this.mem_label + " : " + percent.toString().slice(-3) + "%");
+			let mem_usage_percentage = this._getMemoryUsagePercentage()
+
+			this.set_applet_label(this.mem_label + " : " + mem_usage_percentage.toString().slice(-3) + "%");
 			this.set_applet_tooltip("Click to open Gnome system monitor");
 		}
 		catch (e) {
@@ -66,6 +60,18 @@ MyApplet.prototype = {
 		}
 
 		Mainloop.timeout_add(2000, Lang.bind(this, this._update));
+	},
+
+	_getMemoryUsagePercentage: function(){
+		GTop.glibtop_get_mem(this.mem_gtop);
+		this.mem_usage = this.mem_gtop.used;
+		this.mem_buffer = this.mem_gtop.buffer;
+		this.mem_cached = this.mem_gtop.cached;
+		this.mem_max = this.mem_gtop.total;
+
+		let realuse = this.mem_usage - this.mem_buffer - this.mem_cached;
+		let percent = Math.round((realuse * 100) / this.mem_max);
+		return percent
 	},
 
 	_runSysMon: function() {
