@@ -71,7 +71,16 @@ MyApplet.prototype = {
 	},
 
 	_format: function(label, percent){
-		return label + " :  " + percent.toString().slice(-3) + "%"
+		let str = "";
+		let str_length = 3;
+		let val = percent.toString();
+		let val_length = val.length
+
+		while(str.length < str_length-val_length) {
+			str = " " + str;
+		}
+
+		return label + " :  " + (str + val) + "%"
 	},
 
 	_getMemoryUsagePercentage: function(){
