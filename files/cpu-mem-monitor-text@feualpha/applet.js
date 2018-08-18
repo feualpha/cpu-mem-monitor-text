@@ -28,7 +28,7 @@ MyApplet.prototype = {
 			this.mem_label = "mem"
 			this.cpu_label = "cpu"
 
-			this._applet_label.set_style('min-width: 2.5em; text-align: left');
+			this._applet_label.set_style('min-width: 10em; text-align: left');
 
 			this.mem_usage = 0;
 			this.mem_max = 0;
@@ -60,7 +60,7 @@ MyApplet.prototype = {
 			let mem_usage_percentage = this._getMemoryUsagePercentage()
 			let cpu_usage_percentage = this._getCpuUsagePercentage()
 
-			this.set_applet_label("  " + this._format(this.cpu_label, cpu_usage_percentage) + "  " + this._format(this.mem_label, mem_usage_percentage) + "  ");
+			this.set_applet_label(this._format(this.cpu_label, cpu_usage_percentage) + "  " + this._format(this.mem_label, mem_usage_percentage));
 			this.set_applet_tooltip("Click to open Gnome system monitor");
 		}
 		catch (e) {
