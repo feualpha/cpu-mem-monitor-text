@@ -1,5 +1,5 @@
 {
-    "uuid": "cpu-mem-text-monitor@feualpha",
+    "uuid": "cpu-mem-monitor-text@feualpha",
     "name": "CPU and Memory Text Monitor",
     "description": "cinnamon applet for monitoring cpu and memory displayed on text",
     "icon": "utilities-system-monitor"
