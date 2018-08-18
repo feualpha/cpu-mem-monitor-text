@@ -23,8 +23,10 @@ MyApplet.prototype = {
 			this._applet_context_menu.addMenuItem(this.itemOpenSysMon);
 
 			this.mem_gtop = new GTop.glibtop_mem();
+			this.cpu_gtop = new GTop.glibtop_cpu();
 
 			this.mem_label = "mem"
+			this.cpu_label = "cpu"
 
 			this._applet_label.set_style('min-width: 2.5em; text-align: left');
 
@@ -32,6 +34,11 @@ MyApplet.prototype = {
 			this.mem_max = 0;
 			this.mem_buffer = 0;
 			this.mem_cached = 0;
+
+			this.cpu_current = 0;
+			this.cpu_last = 0;
+			this.cpu_usage = 0;
+			this.cpu_last_total = 0;
 
 			this._update();
 		}
@@ -51,8 +58,9 @@ MyApplet.prototype = {
 	_update: function() {
 		try {
 			let mem_usage_percentage = this._getMemoryUsagePercentage()
+			let cpu_usage_percentage = this._getCpuUsagePercentage()
 
-			this.set_applet_label(this.mem_label + " : " + mem_usage_percentage.toString().slice(-3) + "%");
+			this.set_applet_label(this._format(this.cpu_label, cpu_usage_percentage) + "  " + this._format(this.mem_label, mem_usage_percentage));
 			this.set_applet_tooltip("Click to open Gnome system monitor");
 		}
 		catch (e) {
@@ -60,6 +68,10 @@ MyApplet.prototype = {
 		}
 
 		Mainloop.timeout_add(2000, Lang.bind(this, this._update));
+	},
+
+	_format: function(label, percent){
+		return label + " :  " + percent.toString().slice(-3) + "%"
 	},
 
 	_getMemoryUsagePercentage: function(){
@@ -71,6 +83,23 @@ MyApplet.prototype = {
 
 		let realuse = this.mem_usage - this.mem_buffer - this.mem_cached;
 		let percent = Math.round((realuse * 100) / this.mem_max);
+		return percent
+	},
+
+	_getCpuUsagePercentage: function(){
+		GTop.glibtop_get_cpu(this.cpu_gtop);
+		let max_percentage = 100;
+		this.cpu_current = this.cpu_gtop.idle;
+
+		let delta = (this.cpu_gtop.total - this.cpu_last_total) / max_percentage;
+		if (delta > 0) {
+			this.cpu_usage = Math.round((this.cpu_current - this.cpu_last) / delta);
+			this.cpu_last = this.cpu_current;
+
+			this.cpu_last_total = this.cpu_gtop.total;
+		}
+
+		let percent = Math.round(max_percentage - this.cpu_usage);
 		return percent
 	},
 
